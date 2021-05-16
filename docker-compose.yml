@@ -1,0 +1,45 @@
+version: '3.6'
+
+services:
+  backend:
+    build: ./backend
+    container_name: "toms-calc-backend"
+    depends_on:
+      - db
+    environment:
+      DB_URL: "postgresql://user:pswrd@db:5432/calc"
+    ports:
+      - 7070:7070
+    command: python3 server.py --host="0.0.0.0"
+    restart: always
+    networks:
+      - toms-calc
+  db:
+    container_name: "toms-calc-db"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pswrd
+      POSTGRES_DB: calc
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - ./db_set_up/initial_scripts.sql:/docker-entrypoint-initdb.d/initial_scripts.sql
+    networks:
+      - toms-calc
+  frontend:
+    build: ./frontend
+    container_name: "toms-calc-frontend"
+    environment:
+      VUE_APP_BACKEND_CALCULATE_URL: "http://localhost:7070/calculate"
+    volumes:
+      - './frontend/app:/app'
+      - '/app/node_modules'
+    ports:
+      - 3007:8080
+    networks:
+      - toms-calc
+networks:
+  toms-calc:
+    name: toms-calc

@@ -1,0 +1,11 @@
+/venv
+/.idea
+/.pytest_cache
+*.local
+*.json
+*.xlsx
+tmp.*
+/.coverage
+__pycache__/
+.idea
+__pycache__
